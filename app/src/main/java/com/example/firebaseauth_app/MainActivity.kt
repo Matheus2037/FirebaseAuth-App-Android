@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FireBaseAuthAppTheme {
-
+                App()
             }
         }
     }

@@ -83,7 +83,7 @@ fun RegisterScreen(
             Text("Entrar")
         }
 
-        TextButton(onClick = onNavigateToLogin) {
+        TextButton(onClick = onRegisterSuccess) {
             Text("Criar conta")
         }
     }
