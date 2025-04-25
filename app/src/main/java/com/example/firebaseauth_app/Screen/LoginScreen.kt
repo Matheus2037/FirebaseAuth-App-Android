@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 
 
 @Composable
 fun LoginScreen(
+    navController: NavController,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ){
@@ -76,6 +78,5 @@ fun LoginScreen(
         TextButton(onClick = onNavigateToRegister) {
             Text("Criar conta")
         }
-
     }
 }
