@@ -80,7 +80,7 @@ fun RegisterScreen(
                     }
                 }
         }) {
-            Text("Entrar")
+            Text("Cadastrar")
         }
 
         TextButton(onClick = onRegisterSuccess) {
