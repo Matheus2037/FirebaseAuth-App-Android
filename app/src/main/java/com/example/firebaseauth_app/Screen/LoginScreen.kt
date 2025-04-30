@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,14 +27,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.example.firebaseauth_app.FirebaseAuth.FirebaseAuthManager
+import com.example.firebaseauth_app.FirebaseAuth.GetAuthExceptionPTBR
 
 
 @Composable
-fun LoginCard(){
+fun LoginScreen(
+    navController: NavController,
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit
+){
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -46,21 +52,31 @@ fun LoginCard(){
             border = BorderStroke(1.dp, Color.Black),
             modifier = Modifier.size(width = 300.dp, height = 400.dp)
         ){
-            LoginElements()
+            LoginElements(navController = navController,
+                onLoginSuccess = {
+                    navController.navigate("home")
+                },
+                onNavigateToRegister = {
+                    navController.navigate("registro")
+                })
         }
     }
 }
 
 @Composable
 fun LoginElements(
-//    navController: NavController,
-//    onLoginSuccess: () -> Unit,
-//    onNavigateToRegister: () -> Unit
+    navController: NavController,
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit
 ){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        GetAuthExceptionPTBR.convertJsonToMapStringGson(context)
+    }
 
     Column(
         modifier = Modifier.padding(16.dp)
@@ -76,14 +92,14 @@ fun LoginElements(
             modifier = Modifier.padding(top = 16.dp),
             value = email,
             onValueChange = { email = it },
-            label = { Text("Email") },
+            label = { Text("E-mail") },
             singleLine = true
         )
 
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("password") },
+            label = { Text("Senha") },
             singleLine = true,
             visualTransformation = PasswordVisualTransformation()
         )
@@ -95,32 +111,35 @@ fun LoginElements(
         Button(
             modifier = Modifier.padding(top = 16.dp),
             onClick = {
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            //                        onLoginSuccess()
-                        } else {
-                            error = task.exception?.message
+                if (email.isNotBlank() and password.isNotBlank()) {
+                    FirebaseAuthManager.loginUser(email, password, { success, user, errorMessage ->
+                        if (success) {
+                            onLoginSuccess()
                         }
-                    }
-            }) {
-            Text("Entrar")
-        }
+                        else{
+                            error = errorMessage
+                        }
+                    })
+                }else if (email.isNotBlank() and password.isBlank()){
+                    error = "Preencha a senha"
+                }else if (email.isBlank() and password.isNotBlank()){
+                    error = "Preencha o e-mail"
+                }
+                else{
+                    error = "Preencha todos os campos"
+                }
+            }
+        ) { Text("Entrar") }
 
-        //        TextButton(onClick = onNavigateToRegister) {
-        //            Text("Criar conta")
-        //        }
-
-        TextButton(
-            modifier = Modifier.padding(top = 8.dp),
-            onClick = {}) {
-            Text("Criar conta")
-        }
+            TextButton(modifier = Modifier.padding(top = 8.dp),
+                onClick = onNavigateToRegister) {
+                Text("Criar conta")
+            }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginCard()
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//    LoginCard()
+//}

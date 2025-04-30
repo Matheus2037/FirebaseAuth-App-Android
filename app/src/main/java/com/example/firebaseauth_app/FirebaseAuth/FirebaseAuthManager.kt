@@ -1,9 +1,9 @@
 package com.example.firebaseauth_app.FirebaseAuth
 
-import android.content.ContentValues.TAG
 import android.util.Log
-import android.widget.Toast
+import com.example.firebaseauth_app.FirebaseAuth.GetAuthExceptionPTBR.getErrorMessagePTBR
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
 
 object FirebaseAuthManager {
@@ -11,7 +11,6 @@ object FirebaseAuthManager {
     private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
-
 
     fun createUser(email: String, password: String, onResult: (Boolean, FirebaseUser?) -> Unit) {
         auth.createUserWithEmailAndPassword(email, password)
@@ -25,14 +24,23 @@ object FirebaseAuthManager {
             }
     }
 
-    fun loginUser(email: String, password: String, onResult: (Boolean, FirebaseUser?) -> Unit) {
+    fun loginUser(email: String, password: String, onResult: (Boolean, FirebaseUser?, errorMessage: String?) -> Unit) {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    onResult(true, auth.currentUser)
+                    onResult(true, auth.currentUser, null)
                 } else {
-                    Log.e("Auth", "loginUser: ${task.exception?.message}")
-                    onResult(false, null)
+                    val exception = task.exception
+                    if (exception is FirebaseAuthException) {
+                        val errorCode = exception.errorCode
+                        Log.e("Auth", "loginUser: ${getErrorMessagePTBR(errorCode)}")
+//                        val erroPTBR = getErrorMessagePTBR(errorCode)
+//                        Log.e("Auth", "loginUser: $erroPTBR")
+                        onResult(false, auth.currentUser, getErrorMessagePTBR(errorCode))
+                    } else {
+                        Log.e("Auth", "loginUser: Erro inesperado = ${exception?.message}")
+                        onResult(false, null, null)
+                    }
                 }
             }
     }
