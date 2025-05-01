@@ -109,7 +109,7 @@ fun LoginElements(
         }
 
         Button(
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(top = 64.dp),
             onClick = {
                 if (email.isNotBlank() and password.isNotBlank()) {
                     FirebaseAuthManager.loginUser(email, password, { success, user, errorMessage ->
