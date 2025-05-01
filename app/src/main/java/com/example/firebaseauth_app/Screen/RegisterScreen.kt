@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.firebaseauth_app.FirebaseAuth.FirebaseAuthManager
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -96,18 +97,36 @@ fun RegisterScreen(
                 Button(
                     modifier = Modifier.padding(top = 16.dp),
                     onClick ={
-                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            if(password == passwordConfirmation) {
-                                if (task.isSuccessful) {
-                                    onRegisterSuccess()
-                                } else {
-                                    error = task.exception?.message
-                                }
+                        if (email.isNotBlank() and password.isNotBlank() and passwordConfirmation.isNotBlank()){
+                            if (password == passwordConfirmation) {
+                                FirebaseAuthManager.createUser(email, password, { success, user ->
+                                    if (success) {
+                                        onRegisterSuccess()
+                                    }
+                                    else{
+//                                        error = errorMessage
+                                        error = "teste"
+                                    }
+                                })
                             }else{
-                                error = task.exception?.message
+                                error = "As senhas não coincidem"
                             }
+                        }else{
+                            error = "Preencha todos os campos"
                         }
+
+//                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+//                        .addOnCompleteListener { task ->
+//                            if(password == passwordConfirmation) {
+//                                if (task.isSuccessful) {
+//                                    onRegisterSuccess()
+//                                } else {
+//                                    error = task.exception?.message
+//                                }
+//                            }else{
+//                                error = task.exception?.message
+//                            }
+//                        }
                 }){
                     Text("Cadastrar")
                 }
@@ -120,62 +139,4 @@ fun RegisterScreen(
             }
         }
     }
-
-
-
-//    Column(
-//        Modifier.padding(16.dp)
-//    ) {
-//        Text(text = "Registro", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-//
-//        Spacer(Modifier.height(16.dp))
-//
-//        OutlinedTextField(
-//            value = email,
-//            onValueChange = { email = it },
-//            label = { Text("Email") },
-//            singleLine = true
-//        )
-//
-//        OutlinedTextField(
-//            value = password,
-//            onValueChange = { password = it },
-//            label = { Text("Password") },
-//            singleLine = true,
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//
-//        OutlinedTextField(
-//            value = passwordConfirmation,
-//            onValueChange = { passwordConfirmation = it },
-//            label = { Text("Confirm Password") },
-//            singleLine = true,
-//            visualTransformation = PasswordVisualTransformation()
-//        )
-//
-//        error?.let {
-//            Text(text = it, color = Color.Red)
-//        }
-//
-//        Button(onClick ={
-//            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-//                .addOnCompleteListener { task ->
-//                    if(password == passwordConfirmation) {
-//                        if (task.isSuccessful) {
-//                            onRegisterSuccess()
-//                        } else {
-//                            error = task.exception?.message
-//                        }
-//                    }else{
-//                        error = task.exception?.message
-//                    }
-//                }
-//        }) {
-//            Text("Cadastrar")
-//        }
-//
-//        TextButton(onClick = onRegisterSuccess) {
-//            Text("Criar conta")
-//        }
-//    }
 }
