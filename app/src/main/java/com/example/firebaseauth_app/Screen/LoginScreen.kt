@@ -89,7 +89,7 @@ fun LoginElements(
         Text(text = "Login", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
         OutlinedTextField(
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(top = 32.dp),
             value = email,
             onValueChange = { email = it },
             label = { Text("E-mail") },
@@ -109,7 +109,7 @@ fun LoginElements(
         }
 
         Button(
-            modifier = Modifier.padding(top = 64.dp),
+            modifier = Modifier.padding(top = 48.dp),
             onClick = {
                 if (email.isNotBlank() and password.isNotBlank()) {
                     FirebaseAuthManager.loginUser(email, password, { success, user, errorMessage ->

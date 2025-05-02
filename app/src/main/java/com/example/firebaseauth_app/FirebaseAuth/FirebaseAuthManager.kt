@@ -12,14 +12,21 @@ object FirebaseAuthManager {
         FirebaseAuth.getInstance()
     }
 
-    fun createUser(email: String, password: String, onResult: (Boolean, FirebaseUser?) -> Unit) {
+    fun createUser(email: String, password: String, onResult: (Boolean, FirebaseUser?, errorMessage: String?) -> Unit) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    onResult(true, auth.currentUser)
+                    onResult(true, auth.currentUser, null)
                 } else {
-                    Log.e("Auth", "createUser: ${task.exception?.message}")
-                    onResult(false, null)
+                    val exception = task.exception
+                    if (exception is FirebaseAuthException) {
+                        val errorCode = exception.errorCode
+                        Log.e("Auth", "loginUser: ${getErrorMessagePTBR(errorCode)}")
+                        onResult(false, auth.currentUser, getErrorMessagePTBR(errorCode))
+                    } else {
+                        Log.e("Auth", "loginUser: Erro inesperado = ${exception?.message}")
+                        onResult(false, null, null)
+                    }
                 }
             }
     }
@@ -34,8 +41,6 @@ object FirebaseAuthManager {
                     if (exception is FirebaseAuthException) {
                         val errorCode = exception.errorCode
                         Log.e("Auth", "loginUser: ${getErrorMessagePTBR(errorCode)}")
-//                        val erroPTBR = getErrorMessagePTBR(errorCode)
-//                        Log.e("Auth", "loginUser: $erroPTBR")
                         onResult(false, auth.currentUser, getErrorMessagePTBR(errorCode))
                     } else {
                         Log.e("Auth", "loginUser: Erro inesperado = ${exception?.message}")

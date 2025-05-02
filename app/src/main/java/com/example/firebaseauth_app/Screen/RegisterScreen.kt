@@ -55,7 +55,7 @@ fun RegisterScreen(
                 containerColor = MaterialTheme.colorScheme.surface,
             ),
             border = BorderStroke(1.dp, Color.Black),
-            modifier = Modifier.size(width = 300.dp, height = 400.dp)
+            modifier = Modifier.size(width = 300.dp, height = 425.dp)
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
@@ -99,13 +99,12 @@ fun RegisterScreen(
                     onClick ={
                         if (email.isNotBlank() and password.isNotBlank() and passwordConfirmation.isNotBlank()){
                             if (password == passwordConfirmation) {
-                                FirebaseAuthManager.createUser(email, password, { success, user ->
+                                FirebaseAuthManager.createUser(email, password, { success, user, errorMessage ->
                                     if (success) {
                                         onRegisterSuccess()
                                     }
                                     else{
-//                                        error = errorMessage
-                                        error = "teste"
+                                        error = errorMessage
                                     }
                                 })
                             }else{
